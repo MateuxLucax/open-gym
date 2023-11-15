@@ -7,36 +7,56 @@ import {
 import { Button, Card, Metric, TextInput } from '@tremor/react';
 import Spacer from '../components/spacer';
 import React from 'react';
+import Cookies from 'js-cookie';
+import { useRouter } from 'next/navigation';
+
+const validEmail = 'mateuxlucax@gmail.com';
+const validPassword = '12345678';
 
 export default function LoginPage() {
+  const router = useRouter();
   const [isLoading, setIsLoading] = React.useState(false);
+  const [email, setEmail] = React.useState('');
+  const [password, setPassword] = React.useState('');
+  const [emailError, setEmailError] = React.useState('');
+  const [passwordError, setPasswordError] = React.useState('');
 
-  async function handleLogin(event: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    console.log('submit', {
+      email,
+      password
+    });
+    if (isLoading) return;
+
     setIsLoading(true);
-    console.log('handleLogin', event.currentTarget);
 
-    const email = event.currentTarget.email.value;
-    const password = event.currentTarget.password.value;
-
-    if (!email || !password) {
+    if (email !== validEmail) {
+      setEmailError('Email inválido');
       setIsLoading(false);
       return;
+    } else {
+      setEmailError('');
     }
 
-    if (email != 'mateuxlucax@gmail.com' || password != '123456') {
+    if (password !== validPassword) {
+      setPasswordError('Senha inválida');
       setIsLoading(false);
       return;
+    } else {
+      setPasswordError('');
     }
 
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
-    const data = {
+    setIsLoading(false);
+    const user = {
       email,
       name: 'Mateus Lucas'
     };
 
-    setIsLoading(false);
+    Cookies.set('user', JSON.stringify(user));
+    router.push('/');
   }
 
   return (
@@ -44,10 +64,24 @@ export default function LoginPage() {
       <Card className="max-w-xs mx-auto">
         <Metric>Entrar</Metric>
         <Spacer height={16} />
-        <form onSubmit={handleLogin}>
-          <TextInput icon={UserIcon} placeholder="Digite aqui seu email..." />
+        <form onSubmit={handleSubmit}>
+          <TextInput
+            required
+            icon={UserIcon}
+            error={!!emailError}
+            errorMessage={emailError}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Digite aqui seu email..."
+          />
           <Spacer height={8} />
-          <TextInput placeholder="Digite sua senha aqui..." type="password" />
+          <TextInput
+            placeholder="Digite sua senha aqui..."
+            required
+            error={!!passwordError}
+            errorMessage={passwordError}
+            onChange={(e) => setPassword(e.target.value)}
+            type="password"
+          />
           <Spacer height={16} />
           <Button
             loading={isLoading}

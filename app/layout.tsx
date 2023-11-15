@@ -1,7 +1,7 @@
 import './globals.css';
 
 import { Analytics } from '@vercel/analytics/react';
-import Nav from './nav';
+import Navbar from './components/navbar';
 import { Suspense } from 'react';
 
 export const metadata = {
@@ -18,7 +18,7 @@ export default function RootLayout({
     <html lang="pt-br" className="h-full bg-gray-50">
       <body className="h-full">
         <Suspense>
-          <Nav />
+          <Navbar />
         </Suspense>
         {children}
         <Analytics />

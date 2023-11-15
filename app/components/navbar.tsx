@@ -6,6 +6,8 @@ import { Disclosure, Menu, Transition } from '@headlessui/react';
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
 import { signIn, signOut } from 'next-auth/react';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+import Cookies from 'js-cookie';
 
 const navigation = [
   { name: 'Dashboard', href: '/' },
@@ -16,8 +18,21 @@ function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(' ');
 }
 
-export default function Navbar({ user }: { user: any }) {
+export default function Navbar() {
+  const router = useRouter();
   const pathname = usePathname();
+
+  if (pathname === '/login') {
+    return <> </>;
+  }
+
+  const userJson = Cookies.get('user');
+  const user = userJson ? JSON.parse(userJson) : null;
+
+  if (!user) {
+    router.push('/login');
+    return <> </>;
+  }
 
   return (
     <Disclosure as="nav" className="bg-white shadow-sm">
