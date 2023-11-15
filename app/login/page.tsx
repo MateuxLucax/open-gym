@@ -52,7 +52,8 @@ export default function LoginPage() {
     setIsLoading(false);
     const user = {
       email,
-      name: 'Mateus Lucas'
+      name: 'Mateus Lucas',
+      image: 'https://avatars.githubusercontent.com/u/35275029?v=4'
     };
 
     Cookies.set('user', JSON.stringify(user));

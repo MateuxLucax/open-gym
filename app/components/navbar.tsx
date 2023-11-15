@@ -114,7 +114,10 @@ export default function Navbar() {
                                 active ? 'bg-gray-100' : '',
                                 'flex w-full px-4 py-2 text-sm text-gray-700'
                               )}
-                              onClick={() => signOut()}
+                              onClick={function () {
+                                Cookies.remove('user');
+                                router.push('/login');
+                              }}
                             >
                               Sign out
                             </button>
