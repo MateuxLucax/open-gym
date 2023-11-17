@@ -4,12 +4,9 @@ import { usePathname, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Cookies from 'js-cookie';
 import { ArrowLeftOnRectangleIcon } from '@heroicons/react/24/solid';
+import { classNames } from './utils';
 
 const navigation = [{ name: 'Tela inicial', href: '/dashboard' }];
-
-function classNames(...classes: string[]) {
-  return classes.filter(Boolean).join(' ');
-}
 
 export default function Sidebar() {
   const router = useRouter();
