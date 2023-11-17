@@ -1,12 +1,13 @@
-import './globals.css';
+import './assets/style/globals.css';
 
 import { Analytics } from '@vercel/analytics/react';
 import Navbar from './components/navbar';
-import { Suspense } from 'react';
+import { Metadata } from 'next';
 
-export const metadata = {
+export const metadata: Metadata = {
   title: 'OpenGym',
-  description: 'Gerencimanto de academias, treinos e alunos.'
+  description: 'Gerencimanto de academias, treinos e alunos.',
+  icons: ['/assets/icon.png']
 };
 
 export default function RootLayout({
@@ -15,12 +16,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="pt-br" className="h-full bg-gray-50">
-      <body className="h-full">
-        <Suspense>
-          <Navbar />
-        </Suspense>
-        {children}
+    <html lang="pt-br">
+      <body className="h-screen w-screen flex bg-gray-50">
+        <Navbar />
+        <main className="flex flex-1 flex-col p-8 ml-64">{children}</main>
         <Analytics />
       </body>
     </html>
