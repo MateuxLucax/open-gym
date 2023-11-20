@@ -107,7 +107,7 @@ export default function ProductsDashboard() {
 
   return (
     <>
-      <Title className="text-4xl mb-8">Produtos</Title>
+      <Title className="text-5xl mb-8 font-black">Produtos</Title>
       <Card className="max-w">
         <Table>
           <TableHead>

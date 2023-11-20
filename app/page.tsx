@@ -9,10 +9,7 @@ import Spacer from './components/spacer';
 import React from 'react';
 import Cookies from 'js-cookie';
 import { useRouter } from 'next/navigation';
-import { classNames } from './components/utils';
-
-const validEmail = 'mateuxlucax@gmail.com';
-const validPassword = '12345678';
+import { classNames, user } from './components/utils';
 
 export default function IndexPage() {
   const router = useRouter();
@@ -29,7 +26,7 @@ export default function IndexPage() {
 
     setIsLoading(true);
 
-    if (email !== validEmail) {
+    if (email !== user.email) {
       setEmailError('Email inválido');
       setIsLoading(false);
       return;
@@ -37,7 +34,7 @@ export default function IndexPage() {
       setEmailError('');
     }
 
-    if (password !== validPassword) {
+    if (password !== user.password) {
       setPasswordError('Senha inválida');
       setIsLoading(false);
       return;
@@ -49,11 +46,6 @@ export default function IndexPage() {
     await new Promise((resolve) => setTimeout(resolve, randomWait));
 
     setIsLoading(false);
-    const user = {
-      email,
-      name: 'Mateus Lucas',
-      image: 'https://avatars.githubusercontent.com/u/35275029?v=4'
-    };
 
     Cookies.set('user', JSON.stringify(user));
     router.push('/dashboard');

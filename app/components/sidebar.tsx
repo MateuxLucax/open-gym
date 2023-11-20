@@ -4,7 +4,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Cookies from 'js-cookie';
 import { ArrowLeftOnRectangleIcon } from '@heroicons/react/24/solid';
-import { classNames } from './utils';
+import { classNames, user } from './utils';
 import { Select, SelectItem } from '@tremor/react';
 import {
   AcademicCapIcon,
@@ -74,16 +74,8 @@ export default function Sidebar() {
   const router = useRouter();
   const pathname = usePathname();
 
-  const userJson = Cookies.get('user');
-
-  if (!userJson) {
-    return <aside></aside>;
-  }
-
-  const user = JSON.parse(userJson);
-
   return (
-    <aside className="h-screen fixed top-0 w-64 bg-white flex flex-col">
+    <aside className="w-64 bg-white flex flex-col">
       <div className="flex-shrink-0">
         <div className="px-4 py-4">
           <div className="flex items-center justify-center h-12 relative w-full">

@@ -1,9 +1,6 @@
 'use client';
 
-import { classNames } from '../components/utils';
-import dynamic from 'next/dynamic';
-
-const Sidebar = dynamic(() => import('../components/sidebar'), { ssr: false });
+import Sidebar from '../components/sidebar';
 
 export default function DashboardLayout({
   children
@@ -13,11 +10,7 @@ export default function DashboardLayout({
   return (
     <>
       <Sidebar />
-      <main
-        className={classNames('flex', 'flex-1', 'flex-col', 'p-8', 'ml-64')}
-      >
-        {children}
-      </main>
+      <main className="flex-1 p-8 overflow-y-auto">{children}</main>
     </>
   );
 }
