@@ -9,6 +9,7 @@ import Spacer from './components/spacer';
 import React from 'react';
 import Cookies from 'js-cookie';
 import { useRouter } from 'next/navigation';
+import { classNames } from './components/utils';
 
 const validEmail = 'mateuxlucax@gmail.com';
 const validPassword = '12345678';
@@ -59,36 +60,38 @@ export default function IndexPage() {
   }
 
   return (
-    <Card className="max-w-md my-auto mx-auto">
-      <Metric>Entrar</Metric>
-      <Spacer height={16} />
-      <form onSubmit={handleSubmit}>
-        <TextInput
-          required
-          icon={UserIcon}
-          error={!!emailError}
-          errorMessage={emailError}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder="Digite aqui seu email..."
-        />
-        <Spacer height={8} />
-        <TextInput
-          placeholder="Digite sua senha aqui..."
-          required
-          error={!!passwordError}
-          errorMessage={passwordError}
-          onChange={(e) => setPassword(e.target.value)}
-          type="password"
-        />
+    <main className={classNames('flex', 'flex-1', 'flex-col', 'p-8')}>
+      <Card className="max-w-md my-auto mx-auto">
+        <Metric>Entrar</Metric>
         <Spacer height={16} />
-        <Button
-          loading={isLoading}
-          icon={ArrowRightOnRectangleIcon}
-          type="submit"
-        >
-          Login
-        </Button>
-      </form>
-    </Card>
+        <form onSubmit={handleSubmit}>
+          <TextInput
+            required
+            className="mb-4"
+            icon={UserIcon}
+            error={!!emailError}
+            errorMessage={emailError}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Digite aqui seu email..."
+          />
+          <TextInput
+            placeholder="Digite sua senha aqui..."
+            className="mb-4"
+            required
+            error={!!passwordError}
+            errorMessage={passwordError}
+            onChange={(e) => setPassword(e.target.value)}
+            type="password"
+          />
+          <Button
+            loading={isLoading}
+            icon={ArrowRightOnRectangleIcon}
+            type="submit"
+          >
+            Login
+          </Button>
+        </form>
+      </Card>
+    </main>
   );
 }
