@@ -59,7 +59,6 @@ export default function IndexPage() {
         <form onSubmit={handleSubmit}>
           <TextInput
             required
-            className="mb-4"
             icon={UserIcon}
             error={!!emailError}
             errorMessage={emailError}
@@ -68,7 +67,7 @@ export default function IndexPage() {
           />
           <TextInput
             placeholder="Digite sua senha aqui..."
-            className="mb-4"
+            className="mt-4"
             required
             error={!!passwordError}
             errorMessage={passwordError}
@@ -76,6 +75,7 @@ export default function IndexPage() {
             type="password"
           />
           <Button
+            className="mt-4"
             loading={isLoading}
             icon={ArrowRightOnRectangleIcon}
             type="submit"

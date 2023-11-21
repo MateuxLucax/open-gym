@@ -16,7 +16,6 @@ import {
   Title
 } from '@tremor/react';
 import { formatPrice } from '../../components/utils';
-import Spacer from '../../components/spacer';
 import {
   CurrencyDollarIcon,
   PencilIcon,
@@ -24,6 +23,7 @@ import {
   TrashIcon
 } from '@heroicons/react/24/outline';
 import { useState } from 'react';
+import HeaderTitle from '../../components/headerTitle';
 
 type Product = {
   name: string;
@@ -107,7 +107,7 @@ export default function ProductsDashboard() {
 
   return (
     <>
-      <Title className="text-5xl mb-8 font-black">Produtos</Title>
+      <HeaderTitle>Produtos</HeaderTitle>
       <Card className="max-w">
         <Table>
           <TableHead>
