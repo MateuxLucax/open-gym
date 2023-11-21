@@ -24,6 +24,7 @@ import {
 } from '@heroicons/react/24/outline';
 import { useState } from 'react';
 import HeaderTitle from '../../components/headerTitle';
+import DateRange from '../../components/dateRange';
 
 type Product = {
   name: string;
@@ -107,7 +108,10 @@ export default function ProductsDashboard() {
 
   return (
     <>
-      <HeaderTitle>Produtos</HeaderTitle>
+      <section className="flex flex-row justify-between items-center gap-4 mb-8">
+        <HeaderTitle>Produtos</HeaderTitle>
+        <DateRange />
+      </section>
       <Card className="max-w">
         <Table>
           <TableHead>

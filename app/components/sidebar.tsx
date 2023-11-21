@@ -13,7 +13,8 @@ import {
   CubeIcon,
   HomeIcon,
   RectangleStackIcon,
-  UserGroupIcon
+  UserGroupIcon,
+  WrenchScrewdriverIcon
 } from '@heroicons/react/24/outline';
 import {
   AcademicCapIcon as AcademicCapIconSolid,
@@ -22,7 +23,8 @@ import {
   CubeIcon as CubeIconSolid,
   HomeIcon as HomeIconSolid,
   RectangleStackIcon as RectangleStackIconSolid,
-  UserGroupIcon as UserGroupIconSolid
+  UserGroupIcon as UserGroupIconSolid,
+  WrenchScrewdriverIcon as WrenchScrewdriverIconSolid
 } from '@heroicons/react/24/solid';
 
 const navigation = [
@@ -55,6 +57,12 @@ const navigation = [
     href: '/dashboard/enrollments',
     icon: RectangleStackIcon,
     selectedIcon: RectangleStackIconSolid
+  },
+  {
+    name: 'Equipamentos',
+    href: '/dashboard/equipments',
+    icon: WrenchScrewdriverIcon,
+    selectedIcon: WrenchScrewdriverIconSolid
   },
   {
     name: 'Instrutores',
