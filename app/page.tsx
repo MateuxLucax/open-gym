@@ -9,7 +9,7 @@ import Spacer from './components/spacer';
 import React from 'react';
 import Cookies from 'js-cookie';
 import { useRouter } from 'next/navigation';
-import { classNames, user } from './components/utils';
+import { classNames, user } from './utils';
 
 export default function IndexPage() {
   const router = useRouter();

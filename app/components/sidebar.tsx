@@ -4,7 +4,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Cookies from 'js-cookie';
 import { ArrowLeftOnRectangleIcon } from '@heroicons/react/24/solid';
-import { classNames, user } from './utils';
+import { classNames, user } from '../utils';
 import { Select, SelectItem } from '@tremor/react';
 import {
   AcademicCapIcon,
@@ -141,7 +141,7 @@ export default function Sidebar() {
             </div>
           </div>
         </div>
-        <div className="mt-3 space-y-1">
+        <div className="my-4 space-y-1">
           <button
             onClick={() => {
               Cookies.remove('user');
@@ -150,7 +150,7 @@ export default function Sidebar() {
             className="w-full flex gap-2 px-4 py-2 text-left text-base font-medium text-gray-500 hover:bg-gray-100"
           >
             <ArrowLeftOnRectangleIcon className="h-6 w-6 text-gray-500" />
-            Sign out
+            Sair
           </button>
         </div>
       </div>
