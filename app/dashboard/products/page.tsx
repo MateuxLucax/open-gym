@@ -27,7 +27,6 @@ import {
 } from '@heroicons/react/24/outline';
 import { useState } from 'react';
 import HeaderTitle from '../../components/headerTitle';
-import DateRange from '../../components/dateRange';
 import { Product, defaultProducts } from '../../models/product';
 
 export default function ProductsDashboard() {
@@ -107,6 +106,15 @@ export default function ProductsDashboard() {
     return 0;
   });
 
+  async function removeProduct(id: number) {
+    const confirmed = window.confirm(
+      'Tem certeza que deseja remover este produto?'
+    );
+    if (!confirmed) return;
+    const updatedProducts = products.filter((product) => product.id !== id);
+    setProducts(updatedProducts);
+  }
+
   return (
     <>
       <section className="flex mb-8">
@@ -162,6 +170,7 @@ export default function ProductsDashboard() {
                     color="red"
                     icon={TrashIcon}
                     tooltip="Remover"
+                    onClick={() => removeProduct(product.id)}
                   />
                 </TableCell>
               </TableRow>
@@ -191,7 +200,11 @@ export default function ProductsDashboard() {
               </TableFooterCell>
               <TableFooterCell></TableFooterCell>
               <TableFooterCell>
-                <Button icon={PlusIcon} onClick={handleAddProduct}>
+                <Button
+                  variant="secondary"
+                  icon={PlusIcon}
+                  onClick={handleAddProduct}
+                >
                   Cadastrar produto
                 </Button>
               </TableFooterCell>

@@ -26,6 +26,7 @@ import {
 import { formatDate, formatPrice } from '../../utils';
 import {
   ArchiveBoxIcon,
+  BackspaceIcon,
   PencilIcon,
   PlusIcon,
   TrashIcon
@@ -40,32 +41,71 @@ import { Member, defaultMembers } from '../../models/member';
 
 export default function SalesDashboard() {
   const [sales, setSales] = useState<Sale[]>(defaultSales);
-  const [products, setProducts] = useState<Product[]>([]);
-  const [date, setDate] = useState<Date>(new Date());
-  const [member, setMembers] = useState<Member>();
-  const [product, setProduct] = useState<Product>();
+  const [date, setDate] = useState<Date | undefined>(new Date());
+  const [member, setMember] = useState<Member | undefined>();
+  const [product, setProduct] = useState<Product | undefined>();
   const [quantity, setQuantity] = useState<number>(0);
+  const [sale, setSale] = useState<Sale | undefined>();
 
-  function handleAddSale(event: React.FormEvent<HTMLFormElement>) {
-    // event.preventDefault();
-    // const product = defaultProducts.find(
-    //   (product) => product.id === Number(event.target[0].value)
-    // );
-    // if (!product) {
-    //   return;
-    // }
-    // const newSaleProduct: SaleProduct = {
-    //   product,
-    //   quantity: Number(event.target[1].value)
-    // };
-    // const newSale: Sale = {
-    //   id: sales.length + 1,
-    //   date: new Date(),
-    //   salesProducts: [newSaleProduct],
-    //   member: 'Membro 1'
-    // };
-    // const updatedSales = [...sales, newSale];
-    // setSales(updatedSales);
+  function addProductToSale() {
+    if (!product) {
+      return;
+    }
+    const newSaleProduct: SaleProduct = {
+      product,
+      quantity
+    };
+
+    if (!sale) {
+      const newSale: Sale = {
+        id: sales.length + 1,
+        date: date || new Date(),
+        salesProducts: [newSaleProduct],
+        member: member || defaultMembers[0]
+      };
+      setSale(newSale);
+      setProduct(undefined);
+      setQuantity(0);
+      return;
+    }
+
+    const updatedSale = {
+      ...sale,
+      salesProducts: [...sale.salesProducts, newSaleProduct]
+    };
+    setSale(updatedSale);
+    setProduct(undefined);
+    setQuantity(0);
+  }
+
+  function removeProductFromSale(id: number) {
+    if (!sale) {
+      return;
+    }
+    const updatedSale = {
+      ...sale,
+      salesProducts: sale.salesProducts.filter(
+        (saleProduct) => saleProduct.product.id !== id
+      )
+    };
+    setSale(updatedSale);
+  }
+
+  function addSaleToSales() {
+    if (!sale) {
+      return;
+    }
+    const updatedSales = [...sales, sale];
+    setSales(updatedSales);
+    resetSale();
+  }
+
+  function resetSale() {
+    setSale(undefined);
+    setProduct(undefined);
+    setQuantity(0);
+    setDate(undefined);
+    setMember(undefined);
   }
 
   const total = sales
@@ -75,6 +115,21 @@ export default function SalesDashboard() {
       }, 0)
     )
     .reduce((acc: number, curr: number) => acc + curr, 0);
+
+  const soldProducts = sales
+    .map((sale) => sale.salesProducts.length)
+    .reduce((acc, curr) => acc + curr, 0);
+
+  const boughtMembers = sales
+    .map((sale) => sale.member)
+    .filter((value, index, self) => self.indexOf(value) === index).length;
+
+  async function removeSale(id: number) {
+    const confirmed = window.confirm('Deseja remover a venda?');
+    if (!confirmed) return;
+    const updatedSales = sales.filter((sale) => sale.id !== id);
+    setSales(updatedSales);
+  }
 
   return (
     <>
@@ -96,11 +151,7 @@ export default function SalesDashboard() {
           <Flex alignItems="start">
             <div>
               <Text>Produtos vendidos no período</Text>
-              <Metric>
-                {sales
-                  .map((sale) => sale.salesProducts.length)
-                  .reduce((acc, curr) => acc + curr, 0)}
-              </Metric>
+              <Metric>{soldProducts}</Metric>
             </div>
             <BadgeDelta deltaType="unchanged">1.3%</BadgeDelta>
           </Flex>
@@ -109,35 +160,53 @@ export default function SalesDashboard() {
           <Flex alignItems="start">
             <div>
               <Text>Membros que compraram no período</Text>
-              <Metric>
-                {
-                  sales
-                    .map((sale) => sale.member)
-                    .filter(
-                      (value, index, self) => self.indexOf(value) === index
-                    ).length
-                }
-              </Metric>
+              <Metric>{boughtMembers}</Metric>
             </div>
             <BadgeDelta deltaType="moderateDecrease">-15%</BadgeDelta>
           </Flex>
         </Card>
       </Grid>
       <Grid numItemsSm={1} numItemsMd={2} className="gap-6">
-        <Card>
-          <header className="flex flex-row px-4 items-center justify-between">
-            <Title className="font-normal flex items-center">
-              <span className="mr-1 w-12">#{sales.length + 1} -</span>
+        <Card className="max-h-96 overflow-y-auto">
+          <header className="flex flex-row px-4 items-center">
+            <div>
+              <Title className="font-normal flex items-center mr-1">
+                #{sales.length + 1} -
+              </Title>
+            </div>
+            <div>
               <DatePicker
                 onValueChange={(value) => setDate(value as Date)}
                 locale={ptBR}
+                value={date}
                 placeholder="Vendido em..."
               />
-            </Title>
+            </div>
+            <div className="ml-auto flex gap-4">
+              <Button
+                variant="secondary"
+                icon={BackspaceIcon}
+                color="gray"
+                tooltip="Limpar"
+                onClick={resetSale}
+              >
+                Limpar
+              </Button>
+              <Button
+                variant="secondary"
+                icon={PlusIcon}
+                color="teal"
+                tooltip="Salvar"
+                onClick={addSaleToSales}
+              >
+                Salvar
+              </Button>
+            </div>
           </header>
           <section className="p-4">
             <Select
               placeholder="Membro..."
+              value={String(member?.id)}
               onValueChange={(value) => {
                 const member = defaultMembers.find(
                   (member) => member.id === Number(value)
@@ -145,7 +214,7 @@ export default function SalesDashboard() {
                 if (!member) {
                   return;
                 }
-                setMembers(member);
+                setMember(member);
               }}
             >
               {defaultMembers.map((member) => (
@@ -161,6 +230,7 @@ export default function SalesDashboard() {
                 <TableHeaderCell>Produto</TableHeaderCell>
                 <TableHeaderCell>Quantidade</TableHeaderCell>
                 <TableHeaderCell>Preço</TableHeaderCell>
+                <TableHeaderCell></TableHeaderCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -168,6 +238,7 @@ export default function SalesDashboard() {
                 <TableCell>
                   <Select
                     placeholder="Produtos..."
+                    value={String(product?.id)}
                     onValueChange={(value) => {
                       const product = defaultProducts.find(
                         (product) => product.id === Number(value)
@@ -187,6 +258,7 @@ export default function SalesDashboard() {
                 </TableCell>
                 <TableCell>
                   <NumberInput
+                    value={quantity}
                     onChange={(e) => setQuantity(Number(e.target.value))}
                     icon={ArchiveBoxIcon}
                     placeholder="Quantidade..."
@@ -195,29 +267,44 @@ export default function SalesDashboard() {
                 <TableCell>
                   {formatPrice(product ? product.price * quantity : 0)}
                 </TableCell>
+                <TableCell>
+                  <Button
+                    variant="light"
+                    icon={PlusIcon}
+                    color="teal"
+                    tooltip="Adicionar"
+                    onClick={addProductToSale}
+                  />
+                </TableCell>
               </TableRow>
+              {sale?.salesProducts.map((saleProduct) => (
+                <TableRow key={saleProduct.product.name}>
+                  <TableCell>{saleProduct.product.name}</TableCell>
+                  <TableCell>{saleProduct.quantity}</TableCell>
+                  <TableCell>
+                    {formatPrice(
+                      saleProduct.product.price * saleProduct.quantity
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    <Button
+                      variant="light"
+                      icon={TrashIcon}
+                      color="red"
+                      tooltip="Remover"
+                      onClick={() => {
+                        removeProductFromSale(saleProduct.product.id);
+                      }}
+                    />
+                  </TableCell>
+                </TableRow>
+              ))}
             </TableBody>
             <TableFoot>
               <TableRow>
                 <TableFooterCell>Total</TableFooterCell>
-                <TableFooterCell>
-                  {/* {sale.salesProducts.reduce(
-                      (acc: number, curr: SaleProduct) => {
-                        return acc + curr.quantity;
-                      },
-                      0
-                    )} */}
-                </TableFooterCell>
-                <TableFooterCell>
-                  {/* {formatPrice(
-                      sale.salesProducts.reduce(
-                        (acc: number, curr: SaleProduct) => {
-                          return acc + curr.product.price * curr.quantity;
-                        },
-                        0
-                      )
-                    )} */}
-                </TableFooterCell>
+                <TableFooterCell></TableFooterCell>
+                <TableFooterCell></TableFooterCell>
               </TableRow>
             </TableFoot>
           </Table>
@@ -240,6 +327,7 @@ export default function SalesDashboard() {
                   icon={TrashIcon}
                   color="red"
                   tooltip="Remover"
+                  onClick={() => removeSale(sale.id)}
                 />
               </div>
             </header>
