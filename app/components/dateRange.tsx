@@ -19,6 +19,7 @@ export default function DateRange() {
       value={value}
       onValueChange={setValue}
       locale={ptBR}
+      placeholder="Selecione um período"
       selectPlaceholder="Selecionar"
       color="rose"
     >

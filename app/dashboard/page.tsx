@@ -48,7 +48,9 @@ const data = [
 export default function DashboardPage() {
   return (
     <>
-      <HeaderTitle>Tela inicial</HeaderTitle>
+      <div className="flex mb-8">
+        <HeaderTitle>Tela inicial</HeaderTitle>
+      </div>
       <Grid numItemsSm={2} numItemsLg={3} className="gap-6">
         {data.map((item) => (
           <Card key={item.category}>

@@ -3,6 +3,7 @@ import { defaultProducts } from './product';
 import { SaleProduct, defaultSaleProducts } from './saleProduct';
 
 export type Sale = {
+  product: any;
   id: number;
   salesProducts: SaleProduct[];
   date: Date;

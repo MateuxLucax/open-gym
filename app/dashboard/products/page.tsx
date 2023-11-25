@@ -42,6 +42,7 @@ export default function ProductsDashboard() {
     event.preventDefault();
 
     const newProduct: Product = {
+      id: products.length + 1,
       name,
       price: Number(price),
       inStock: Number(stock),
@@ -108,9 +109,8 @@ export default function ProductsDashboard() {
 
   return (
     <>
-      <section className="flex flex-row justify-between items-center gap-4 mb-8">
+      <section className="flex mb-8">
         <HeaderTitle>Produtos</HeaderTitle>
-        <DateRange />
       </section>
       <Card className="max-w">
         <Table>
@@ -145,14 +145,24 @@ export default function ProductsDashboard() {
           </TableHead>
           <TableBody>
             {sortedProducts.map((product) => (
-              <TableRow key={product.name}>
+              <TableRow key={product.id}>
                 <TableCell>{product.name}</TableCell>
                 <TableCell>{formatPrice(product.price)}</TableCell>
                 <TableCell>{product.inStock}</TableCell>
                 <TableCell>{product.sold}</TableCell>
                 <TableCell className="flex flex-row gap-4">
-                  <Button color="teal" icon={PencilIcon} tooltip="Alterar" />
-                  <Button color="red" icon={TrashIcon} tooltip="Remover" />
+                  <Button
+                    variant="light"
+                    color="teal"
+                    icon={PencilIcon}
+                    tooltip="Alterar"
+                  />
+                  <Button
+                    variant="light"
+                    color="red"
+                    icon={TrashIcon}
+                    tooltip="Remover"
+                  />
                 </TableCell>
               </TableRow>
             ))}
