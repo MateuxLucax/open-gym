@@ -9,6 +9,7 @@ import { Select, SelectItem } from '@tremor/react';
 import {
   AcademicCapIcon,
   BanknotesIcon,
+  BugAntIcon,
   CreditCardIcon,
   CubeIcon,
   HomeIcon,
@@ -24,7 +25,8 @@ import {
   HomeIcon as HomeIconSolid,
   RectangleStackIcon as RectangleStackIconSolid,
   UserGroupIcon as UserGroupIconSolid,
-  WrenchScrewdriverIcon as WrenchScrewdriverIconSolid
+  WrenchScrewdriverIcon as WrenchScrewdriverIconSolid,
+  BugAntIcon as BugAntIconSolid
 } from '@heroicons/react/24/solid';
 
 const navigation = [
@@ -75,6 +77,12 @@ const navigation = [
     href: '/dashboard/cash-flow',
     icon: BanknotesIcon,
     selectedIcon: BanknotesIconSolid
+  },
+  {
+    name: 'Atividades',
+    href: '/dashboard/activities',
+    icon: BugAntIcon,
+    selectedIcon: BugAntIconSolid
   }
 ];
 

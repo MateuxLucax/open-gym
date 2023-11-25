@@ -1,9 +1,12 @@
 'use client';
 
+import { ptBR } from 'date-fns/locale';
 import {
   Button,
   Card,
-  NumberInput,
+  DatePicker,
+  Select,
+  SelectItem,
   Table,
   TableBody,
   TableCell,
@@ -14,48 +17,44 @@ import {
   TableRow,
   TextInput
 } from '@tremor/react';
-import { formatPrice } from '../../utils';
+import { formatDate } from '../../utils';
 import {
-  ArchiveBoxIcon,
   ArrowSmallDownIcon,
   ArrowSmallUpIcon,
   ArrowsUpDownIcon,
-  CurrencyDollarIcon,
   PencilIcon,
   PlusIcon,
   TrashIcon
 } from '@heroicons/react/24/outline';
 import { useState } from 'react';
 import HeaderTitle from '../../components/headerTitle';
-import { Product, defaultProducts } from '../../models/product';
+import { Gender, Member, defaultMembers } from '../../models/member';
 
-export default function ProductsPage() {
+export default function Members() {
   const [name, setName] = useState('');
-  const [price, setPrice] = useState('0');
-  const [stock, setStock] = useState('0');
-  const [products, setProducts] = useState<Product[]>(defaultProducts);
+  const [gender, setGender] = useState<Gender>();
+  const [birthDate, setBirthDate] = useState(new Date(2000, 1, 1));
+  const [members, setMembers] = useState<Member[]>(defaultMembers);
   const [sortKey, setSortKey] = useState<string>('');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc' | 'none'>('none');
 
-  function handleAddProduct(event: React.MouseEvent<HTMLButtonElement>) {
-    event.preventDefault();
+  function handleAddMember() {
+    if (!name) return;
+    if (!gender) return;
+    if (!birthDate) return;
 
-    const newProduct: Product = {
-      id: products.length + 1,
+    const newMember: Member = {
+      id: members.length + 1,
       name,
-      price: Number(price),
-      inStock: Number(stock),
-      sold: 0
+      gender,
+      birthDate
     };
 
-    const updatedProducts = [...products, newProduct];
-
-    setProducts(updatedProducts);
+    setMembers((prevMembers) => [...prevMembers, newMember]);
     setName('');
-    setPrice('0');
-    setStock('0');
+    setGender(undefined);
+    setBirthDate(new Date(2000, 1, 1));
   }
-
   function renderSortIcon(key: string) {
     if (sortKey === key) {
       if (sortOrder === 'asc') {
@@ -86,10 +85,10 @@ export default function ProductsPage() {
     }
   }
 
-  const sortedProducts = [...products].sort((a, b) => {
+  const sortedMembers = [...members].sort((a, b) => {
     if (sortKey && sortOrder !== 'none') {
-      const aValue = a[sortKey as keyof Product];
-      const bValue = b[sortKey as keyof Product];
+      const aValue = a[sortKey as keyof Member];
+      const bValue = b[sortKey as keyof Member];
 
       if (typeof aValue === 'number' && typeof bValue === 'number') {
         if (aValue < bValue) return sortOrder === 'asc' ? -1 : 1;
@@ -106,19 +105,19 @@ export default function ProductsPage() {
     return 0;
   });
 
-  async function removeProduct(id: number) {
+  async function removeMember(id: number) {
     const confirmed = window.confirm(
-      'Tem certeza que deseja remover este produto?'
+      'Tem certeza que deseja remover este membro?'
     );
     if (!confirmed) return;
-    const updatedProducts = products.filter((product) => product.id !== id);
-    setProducts(updatedProducts);
+    const updatedMembers = members.filter((member) => member.id !== id);
+    setMembers(updatedMembers);
   }
 
   return (
     <>
       <section className="flex mb-8">
-        <HeaderTitle>Produtos</HeaderTitle>
+        <HeaderTitle>Membros</HeaderTitle>
       </section>
       <Card className="max-w">
         <Table>
@@ -135,35 +134,28 @@ export default function ProductsPage() {
                   {renderSortIcon('name')}
                 </span>
               </TableHeaderCell>
-              <TableHeaderCell onClick={() => handleSort('price')}>
+              <TableHeaderCell onClick={() => handleSort('birthDate')}>
                 <span className="flex flex-row align-middle gap-4">
-                  Preço
-                  {renderSortIcon('price')}
+                  Data de nascimento
+                  {renderSortIcon('birthDate')}
                 </span>
               </TableHeaderCell>
-              <TableHeaderCell onClick={() => handleSort('inStock')}>
+              <TableHeaderCell onClick={() => handleSort('gender')}>
                 <span className="flex flex-row align-middle gap-4">
-                  Estoque
-                  {renderSortIcon('inStock')}
-                </span>
-              </TableHeaderCell>
-              <TableHeaderCell onClick={() => handleSort('sold')}>
-                <span className="flex flex-row align-middle gap-4">
-                  Vendido
-                  {renderSortIcon('sold')}
+                  Gênero
+                  {renderSortIcon('gender')}
                 </span>
               </TableHeaderCell>
               <TableHeaderCell>Ações</TableHeaderCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {sortedProducts.map((product) => (
-              <TableRow key={product.id}>
-                <TableCell>{product.id}</TableCell>
-                <TableCell>{product.name}</TableCell>
-                <TableCell>{formatPrice(product.price)}</TableCell>
-                <TableCell>{product.inStock}</TableCell>
-                <TableCell>{product.sold}</TableCell>
+            {sortedMembers.map((member) => (
+              <TableRow key={member.id}>
+                <TableCell>{member.id}</TableCell>
+                <TableCell>{member.name}</TableCell>
+                <TableCell>{formatDate(member.birthDate)}</TableCell>
+                <TableCell>{member.gender}</TableCell>
                 <TableCell className="flex flex-row gap-4">
                   <Button
                     variant="light"
@@ -176,7 +168,7 @@ export default function ProductsPage() {
                     color="red"
                     icon={TrashIcon}
                     tooltip="Remover"
-                    onClick={() => removeProduct(product.id)}
+                    onClick={() => removeMember(member.id)}
                   />
                 </TableCell>
               </TableRow>
@@ -193,27 +185,37 @@ export default function ProductsPage() {
                 />
               </TableFooterCell>
               <TableFooterCell>
-                <NumberInput
-                  onChange={(e) => setPrice(e.target.value)}
-                  icon={CurrencyDollarIcon}
-                  placeholder="Preço..."
+                <DatePicker
+                  onValueChange={(value) => setBirthDate(value as Date)}
+                  locale={ptBR}
+                  value={birthDate}
+                  enableYearNavigation
+                  placeholder="Nascido em..."
                 />
               </TableFooterCell>
               <TableFooterCell>
-                <NumberInput
-                  onChange={(e) => setStock(e.target.value)}
-                  icon={ArchiveBoxIcon}
-                  placeholder="Estoque..."
-                />
+                <Select
+                  placeholder="Genero..."
+                  value={String(gender)}
+                  onValueChange={(value) => {
+                    if (value === 'Masculino') setGender(Gender.masculino);
+                    if (value === 'Feminino') setGender(Gender.feminino);
+                    if (value === 'Outro') setGender(Gender.outro);
+                  }}
+                >
+                  <SelectItem value={String('Masculino')}>Masculino</SelectItem>
+                  <SelectItem value={String('Feminino')}>Feminino</SelectItem>
+                  <SelectItem value={String('Outro')}>Outro</SelectItem>
+                </Select>
               </TableFooterCell>
               <TableFooterCell></TableFooterCell>
               <TableFooterCell>
                 <Button
                   variant="secondary"
                   icon={PlusIcon}
-                  onClick={handleAddProduct}
+                  onClick={handleAddMember}
                 >
-                  Cadastrar produto
+                  Cadastrar membro
                 </Button>
               </TableFooterCell>
             </TableRow>

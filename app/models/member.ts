@@ -2,26 +2,34 @@ export type Member = {
   id: number;
   name: string;
   birthDate: Date;
-  gender: 'masculino' | 'feminino' | 'outro';
+  gender: Gender;
 };
+
+export enum Gender {
+  masculino = 'Masculino',
+  feminino = 'Feminino',
+  outro = 'Outro'
+}
+
+export const genders = [Gender.masculino, Gender.feminino, Gender.outro];
 
 export const defaultMembers: Member[] = [
   {
     id: 1,
     name: 'João Silva',
     birthDate: new Date(1990, 5, 15),
-    gender: 'masculino'
+    gender: Gender.masculino
   },
   {
     id: 2,
     name: 'Maria Santos',
     birthDate: new Date(1985, 7, 20),
-    gender: 'feminino'
+    gender: Gender.feminino
   },
   {
     id: 3,
     name: 'Alex Pereira',
     birthDate: new Date(1992, 11, 30),
-    gender: 'outro'
+    gender: Gender.outro
   }
 ];

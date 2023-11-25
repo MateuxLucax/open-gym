@@ -39,7 +39,7 @@ import { SaleProduct } from '../../models/saleProduct';
 import { Product, defaultProducts } from '../../models/product';
 import { Member, defaultMembers } from '../../models/member';
 
-export default function SalesDashboard() {
+export default function SalesPage() {
   const [sales, setSales] = useState<Sale[]>(defaultSales);
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [member, setMember] = useState<Member | undefined>();
