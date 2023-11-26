@@ -1,10 +1,9 @@
 'use client';
 
-import { ptBR } from 'date-fns/locale';
 import {
   Button,
   Card,
-  DatePicker,
+  NumberInput,
   Select,
   SelectItem,
   Table,
@@ -17,7 +16,7 @@ import {
   TableRow,
   TextInput
 } from '@tremor/react';
-import { formatDate } from '../../utils';
+import { formatMoney } from '../../utils';
 import {
   ArrowSmallDownIcon,
   ArrowSmallUpIcon,
@@ -28,32 +27,36 @@ import {
 } from '@heroicons/react/24/outline';
 import { useState } from 'react';
 import HeaderTitle from '../../components/headerTitle';
-import { Gender, Member, defaultMembers } from '../../models/member';
+import {
+  Equipment,
+  EquipmentType,
+  defaultEquipments
+} from '../../models/equipment';
 
-export default function MembersPage() {
+export default function EquipmentPage() {
   const [name, setName] = useState('');
-  const [gender, setGender] = useState<Gender>();
-  const [birthDate, setBirthDate] = useState(new Date(2000, 1, 1));
-  const [members, setMembers] = useState<Member[]>(defaultMembers);
+  const [type, setType] = useState<EquipmentType>();
+  const [monthlyCost, setMonthlyCost] = useState(0);
+  const [equipments, setEquipments] = useState<Equipment[]>(defaultEquipments);
   const [sortKey, setSortKey] = useState<string>('');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc' | 'none'>('none');
 
-  function handleAddMember() {
+  function handleAddEquipment() {
     if (!name) return;
-    if (!gender) return;
-    if (!birthDate) return;
+    if (!type) return;
+    if (!monthlyCost) return;
 
-    const newMember: Member = {
-      id: members.length + 1,
+    const newEquipment: Equipment = {
+      id: equipments.length + 1,
       name,
-      gender,
-      birthDate
+      type: type,
+      monthlyMaintenanceCost: monthlyCost
     };
 
-    setMembers((prevMembers) => [...prevMembers, newMember]);
+    setEquipments((prevEquipments) => [...prevEquipments, newEquipment]);
     setName('');
-    setGender(undefined);
-    setBirthDate(new Date(2000, 1, 1));
+    setType(undefined);
+    setMonthlyCost(0);
   }
   function renderSortIcon(key: string) {
     if (sortKey === key) {
@@ -85,10 +88,10 @@ export default function MembersPage() {
     }
   }
 
-  const sortedMembers = [...members].sort((a, b) => {
+  const sortedEquipments = [...equipments].sort((a, b) => {
     if (sortKey && sortOrder !== 'none') {
-      const aValue = a[sortKey as keyof Member];
-      const bValue = b[sortKey as keyof Member];
+      const aValue = a[sortKey as keyof Equipment];
+      const bValue = b[sortKey as keyof Equipment];
 
       if (typeof aValue === 'number' && typeof bValue === 'number') {
         if (aValue < bValue) return sortOrder === 'asc' ? -1 : 1;
@@ -105,19 +108,21 @@ export default function MembersPage() {
     return 0;
   });
 
-  async function removeMember(id: number) {
+  async function removeEquipment(id: number) {
     const confirmed = window.confirm(
-      'Tem certeza que deseja remover este membro?'
+      'Tem certeza que deseja remover este equipamento?'
     );
     if (!confirmed) return;
-    const updatedMembers = members.filter((member) => member.id !== id);
-    setMembers(updatedMembers);
+    const updatedEquipments = equipments.filter(
+      (equipment) => equipment.id !== id
+    );
+    setEquipments(updatedEquipments);
   }
 
   return (
     <>
       <section className="flex mb-8">
-        <HeaderTitle>Membros</HeaderTitle>
+        <HeaderTitle>Equipamentos</HeaderTitle>
       </section>
       <Card className="max-w">
         <Table>
@@ -134,28 +139,32 @@ export default function MembersPage() {
                   {renderSortIcon('name')}
                 </span>
               </TableHeaderCell>
-              <TableHeaderCell onClick={() => handleSort('birthDate')}>
+              <TableHeaderCell onClick={() => handleSort('type')}>
                 <span className="flex flex-row align-middle gap-4">
-                  Data de nascimento
-                  {renderSortIcon('birthDate')}
+                  Tipo
+                  {renderSortIcon('type')}
                 </span>
               </TableHeaderCell>
-              <TableHeaderCell onClick={() => handleSort('gender')}>
+              <TableHeaderCell
+                onClick={() => handleSort('monthlyMaintenanceCost')}
+              >
                 <span className="flex flex-row align-middle gap-4">
-                  Gênero
-                  {renderSortIcon('gender')}
+                  Manutenção mensal
+                  {renderSortIcon('monthlyMaintenanceCost')}
                 </span>
               </TableHeaderCell>
               <TableHeaderCell>Ações</TableHeaderCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {sortedMembers.map((member) => (
-              <TableRow key={member.id}>
-                <TableCell>{member.id}</TableCell>
-                <TableCell>{member.name}</TableCell>
-                <TableCell>{formatDate(member.birthDate)}</TableCell>
-                <TableCell>{member.gender}</TableCell>
+            {sortedEquipments.map((equipment) => (
+              <TableRow key={equipment.id}>
+                <TableCell>{equipment.id}</TableCell>
+                <TableCell>{equipment.name}</TableCell>
+                <TableCell>{equipment.type}</TableCell>
+                <TableCell>
+                  {formatMoney(equipment.monthlyMaintenanceCost)}
+                </TableCell>
                 <TableCell className="flex flex-row gap-4">
                   <Button
                     variant="light"
@@ -168,7 +177,7 @@ export default function MembersPage() {
                     color="red"
                     icon={TrashIcon}
                     tooltip="Remover"
-                    onClick={() => removeMember(member.id)}
+                    onClick={() => removeEquipment(equipment.id)}
                   />
                 </TableCell>
               </TableRow>
@@ -185,36 +194,37 @@ export default function MembersPage() {
                 />
               </TableFooterCell>
               <TableFooterCell>
-                <DatePicker
-                  onValueChange={(value) => setBirthDate(value as Date)}
-                  locale={ptBR}
-                  value={birthDate}
-                  enableYearNavigation
-                  placeholder="Nascido em..."
-                />
-              </TableFooterCell>
-              <TableFooterCell>
                 <Select
-                  placeholder="Genero..."
-                  value={String(gender)}
+                  placeholder="Tipo..."
+                  value={String(type)}
                   onValueChange={(value) => {
-                    if (value === 'Masculino') setGender(Gender.masculino);
-                    if (value === 'Feminino') setGender(Gender.feminino);
-                    if (value === 'Outro') setGender(Gender.outro);
+                    if (value === 'Cardio') setType(EquipmentType.cardio);
+                    if (value === 'Musculação')
+                      setType(EquipmentType.musculacao);
+                    if (value === 'Funcional') setType(EquipmentType.funcional);
                   }}
                 >
-                  <SelectItem value={String('Masculino')}>Masculino</SelectItem>
-                  <SelectItem value={String('Feminino')}>Feminino</SelectItem>
-                  <SelectItem value={String('Outro')}>Outro</SelectItem>
+                  <SelectItem value={String('Cardio')}>Cardio</SelectItem>
+                  <SelectItem value={String('Musculação')}>
+                    Musculação
+                  </SelectItem>
+                  <SelectItem value={String('Funcional')}>Funcional</SelectItem>
                 </Select>
+              </TableFooterCell>
+              <TableFooterCell>
+                <NumberInput
+                  value={monthlyCost}
+                  onChange={(e) => setMonthlyCost(Number(e.target.value))}
+                  placeholder="Manutenção mensal..."
+                />
               </TableFooterCell>
               <TableFooterCell>
                 <Button
                   variant="secondary"
                   icon={PlusIcon}
-                  onClick={handleAddMember}
+                  onClick={handleAddEquipment}
                 >
-                  Cadastrar membro
+                  Cadastrar equipamento
                 </Button>
               </TableFooterCell>
             </TableRow>

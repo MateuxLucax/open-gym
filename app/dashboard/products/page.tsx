@@ -14,7 +14,7 @@ import {
   TableRow,
   TextInput
 } from '@tremor/react';
-import { formatPrice } from '../../utils';
+import { formatMoney } from '../../utils';
 import {
   ArchiveBoxIcon,
   ArrowSmallDownIcon,
@@ -161,7 +161,7 @@ export default function ProductsPage() {
               <TableRow key={product.id}>
                 <TableCell>{product.id}</TableCell>
                 <TableCell>{product.name}</TableCell>
-                <TableCell>{formatPrice(product.price)}</TableCell>
+                <TableCell>{formatMoney(product.price)}</TableCell>
                 <TableCell>{product.inStock}</TableCell>
                 <TableCell>{product.sold}</TableCell>
                 <TableCell className="flex flex-row gap-4">

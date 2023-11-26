@@ -23,7 +23,7 @@ import {
   Text,
   Title
 } from '@tremor/react';
-import { formatDate, formatPrice } from '../../utils';
+import { formatDate, formatMoney } from '../../utils';
 import {
   ArchiveBoxIcon,
   BackspaceIcon,
@@ -142,7 +142,7 @@ export default function SalesPage() {
           <Flex alignItems="start">
             <div>
               <Text>Total no período</Text>
-              <Metric>{formatPrice(total)}</Metric>
+              <Metric>{formatMoney(total)}</Metric>
             </div>
             <BadgeDelta deltaType="moderateIncrease">8.3%</BadgeDelta>
           </Flex>
@@ -265,7 +265,7 @@ export default function SalesPage() {
                   />
                 </TableCell>
                 <TableCell>
-                  {formatPrice(product ? product.price * quantity : 0)}
+                  {formatMoney(product ? product.price * quantity : 0)}
                 </TableCell>
                 <TableCell>
                   <Button
@@ -282,7 +282,7 @@ export default function SalesPage() {
                   <TableCell>{saleProduct.product.name}</TableCell>
                   <TableCell>{saleProduct.quantity}</TableCell>
                   <TableCell>
-                    {formatPrice(
+                    {formatMoney(
                       saleProduct.product.price * saleProduct.quantity
                     )}
                   </TableCell>
@@ -346,7 +346,7 @@ export default function SalesPage() {
                     <TableCell>{saleProduct.product.name}</TableCell>
                     <TableCell>{saleProduct.quantity}</TableCell>
                     <TableCell>
-                      {formatPrice(
+                      {formatMoney(
                         saleProduct.product.price * saleProduct.quantity
                       )}
                     </TableCell>
@@ -365,7 +365,7 @@ export default function SalesPage() {
                     )}
                   </TableFooterCell>
                   <TableFooterCell>
-                    {formatPrice(
+                    {formatMoney(
                       sale.salesProducts.reduce(
                         (acc: number, curr: SaleProduct) => {
                           return acc + curr.product.price * curr.quantity;
