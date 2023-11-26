@@ -58,6 +58,7 @@ export default function EquipmentPage() {
     setType(undefined);
     setMonthlyCost(0);
   }
+
   function renderSortIcon(key: string) {
     if (sortKey === key) {
       if (sortOrder === 'asc') {

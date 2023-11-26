@@ -56,6 +56,7 @@ export default function MembersPage() {
     setGender(undefined);
     setBirthDate(new Date(2000, 1, 1));
   }
+
   function renderSortIcon(key: string) {
     if (sortKey === key) {
       if (sortOrder === 'asc') {

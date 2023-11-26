@@ -24,41 +24,47 @@ import {
   CurrencyDollarIcon,
   PencilIcon,
   PlusIcon,
-  TrashIcon
+  TrashIcon,
+  UserGroupIcon
 } from '@heroicons/react/24/outline';
 import { useState } from 'react';
-import { Gender } from '../../models/gender';
 import { Instructor, defaultInstructors } from '../../models/instructor';
 import HeaderTitle from '../../components/headerTitle';
+import { Activity, defaultActivities } from '../../models/activity';
+import { Equipment, defaultEquipments } from '../../models/equipment';
 
-export default function InstructorsPage() {
+export default function ActivitiesPage() {
   const [name, setName] = useState('');
-  const [gender, setGender] = useState<Gender>();
-  const [qualification, setQualification] = useState('');
-  const [wage, setWage] = useState(0);
-  const [instructors, setInstructors] =
-    useState<Instructor[]>(defaultInstructors);
+  const [maxMembers, setMaxMembers] = useState<number>();
+  const [price, setPrice] = useState<number>();
+  const [equipment, setEquipment] = useState<Equipment>();
+  const [instructor, setInstructor] = useState<Instructor>();
+  const [activities, setActivities] = useState<Activity[]>(defaultActivities);
   const [sortKey, setSortKey] = useState<string>('');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc' | 'none'>('none');
 
-  function handleAddInstructor() {
+  function handleAddActivity() {
     if (!name) return;
-    if (!gender) return;
-    if (!qualification) return;
+    if (!maxMembers) return;
+    if (!price) return;
+    if (!equipment) return;
+    if (!instructor) return;
 
-    const newInstructor: Instructor = {
-      id: instructors.length + 1,
+    const newActivity: Activity = {
+      id: activities.length + 1,
       name,
-      gender,
-      qualification: qualification,
-      wage: wage
+      maxMembers,
+      price,
+      equipment,
+      instructor
     };
 
-    setInstructors((prevInstructors) => [...prevInstructors, newInstructor]);
+    setActivities((prevActivities) => [...prevActivities, newActivity]);
     setName('');
-    setGender(undefined);
-    setQualification('');
-    setWage(0);
+    setMaxMembers(0);
+    setPrice(0);
+    setEquipment(undefined);
+    setInstructor(undefined);
   }
 
   function renderSortIcon(key: string) {
@@ -91,10 +97,10 @@ export default function InstructorsPage() {
     }
   }
 
-  const sortedInstructors = [...instructors].sort((a, b) => {
+  const sortedActivities = [...activities].sort((a, b) => {
     if (sortKey && sortOrder !== 'none') {
-      const aValue = a[sortKey as keyof Instructor];
-      const bValue = b[sortKey as keyof Instructor];
+      const aValue = a[sortKey as keyof Activity];
+      const bValue = b[sortKey as keyof Activity];
 
       if (typeof aValue === 'number' && typeof bValue === 'number') {
         if (aValue < bValue) return sortOrder === 'asc' ? -1 : 1;
@@ -111,21 +117,21 @@ export default function InstructorsPage() {
     return 0;
   });
 
-  async function removeInstructor(id: number) {
+  async function removeActivity(id: number) {
     const confirmed = window.confirm(
-      'Tem certeza que deseja remover este instrutor?'
+      'Tem certeza que deseja remover esta atividade?'
     );
     if (!confirmed) return;
-    const updatedInstructors = instructors.filter(
-      (instructor) => instructor.id !== id
+    const updatedActivities = activities.filter(
+      (activity) => activity.id !== id
     );
-    setInstructors(updatedInstructors);
+    setActivities(updatedActivities);
   }
 
   return (
     <>
       <section className="flex mb-8">
-        <HeaderTitle>Instrutores</HeaderTitle>
+        <HeaderTitle>Atividades</HeaderTitle>
       </section>
       <Card className="max-w">
         <Table>
@@ -142,35 +148,42 @@ export default function InstructorsPage() {
                   {renderSortIcon('name')}
                 </span>
               </TableHeaderCell>
-              <TableHeaderCell onClick={() => handleSort('qualification')}>
+              <TableHeaderCell onClick={() => handleSort('maxMembers')}>
                 <span className="flex flex-row align-middle gap-4">
-                  Qualificação
-                  {renderSortIcon('qualification')}
+                  Máximo de membros
+                  {renderSortIcon('maxMembers')}
                 </span>
               </TableHeaderCell>
-              <TableHeaderCell onClick={() => handleSort('gender')}>
+              <TableHeaderCell onClick={() => handleSort('price')}>
                 <span className="flex flex-row align-middle gap-4">
-                  Gênero
-                  {renderSortIcon('gender')}
+                  Mensalidade
+                  {renderSortIcon('price')}
                 </span>
               </TableHeaderCell>
-              <TableHeaderCell onClick={() => handleSort('wage')}>
+              <TableHeaderCell onClick={() => handleSort('equipment')}>
                 <span className="flex flex-row align-middle gap-4">
-                  Salário
-                  {renderSortIcon('wage')}
+                  Equipamento
+                  {renderSortIcon('equipment')}
+                </span>
+              </TableHeaderCell>
+              <TableHeaderCell onClick={() => handleSort('instructor')}>
+                <span className="flex flex-row align-middle gap-4">
+                  Instrutor
+                  {renderSortIcon('instructor')}
                 </span>
               </TableHeaderCell>
               <TableHeaderCell>Ações</TableHeaderCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {sortedInstructors.map((instructor) => (
-              <TableRow key={instructor.id}>
-                <TableCell>{instructor.id}</TableCell>
-                <TableCell>{instructor.name}</TableCell>
-                <TableCell>{instructor.qualification}</TableCell>
-                <TableCell>{instructor.gender}</TableCell>
-                <TableCell>{formatMoney(instructor.wage)}</TableCell>
+            {sortedActivities.map((activity) => (
+              <TableRow key={activity.id}>
+                <TableCell>{activity.id}</TableCell>
+                <TableCell>{activity.name}</TableCell>
+                <TableCell>{activity.maxMembers}</TableCell>
+                <TableCell>{formatMoney(activity.price)}</TableCell>
+                <TableCell>{activity.equipment.name}</TableCell>
+                <TableCell>{activity.instructor.name}</TableCell>
                 <TableCell className="flex flex-row gap-4">
                   <Button
                     variant="light"
@@ -183,7 +196,7 @@ export default function InstructorsPage() {
                     color="red"
                     icon={TrashIcon}
                     tooltip="Remover"
-                    onClick={() => removeInstructor(instructor.id)}
+                    onClick={() => removeActivity(activity.id)}
                   />
                 </TableCell>
               </TableRow>
@@ -200,41 +213,64 @@ export default function InstructorsPage() {
                 />
               </TableFooterCell>
               <TableFooterCell>
-                <TextInput
-                  value={qualification}
-                  onChange={(e) => setQualification(e.target.value)}
-                  placeholder="Qualificação..."
+                <NumberInput
+                  value={maxMembers}
+                  onChange={(e) => setMaxMembers(Number(e.target.value))}
+                  icon={UserGroupIcon}
+                  placeholder="Máximo de membros..."
+                />
+              </TableFooterCell>
+              <TableFooterCell>
+                <NumberInput
+                  value={price}
+                  onChange={(e) => setPrice(Number(e.target.value))}
+                  icon={CurrencyDollarIcon}
+                  placeholder="Mensalidade..."
                 />
               </TableFooterCell>
               <TableFooterCell>
                 <Select
-                  placeholder="Genero..."
-                  value={String(gender)}
+                  placeholder="Equipamento..."
+                  value={String(equipment?.name)}
                   onValueChange={(value) => {
-                    if (value === 'Masculino') setGender(Gender.masculino);
-                    if (value === 'Feminino') setGender(Gender.feminino);
-                    if (value === 'Outro') setGender(Gender.outro);
+                    const equipment = defaultEquipments.find(
+                      (equipment) => equipment.name === value
+                    );
+                    setEquipment(equipment);
                   }}
                 >
-                  <SelectItem value={String('Masculino')}>Masculino</SelectItem>
-                  <SelectItem value={String('Feminino')}>Feminino</SelectItem>
-                  <SelectItem value={String('Outro')}>Outro</SelectItem>
+                  {defaultEquipments.map((equipment) => (
+                    <SelectItem key={equipment.id} value={equipment.name}>
+                      {equipment.name}
+                    </SelectItem>
+                  ))}
                 </Select>
               </TableFooterCell>
               <TableFooterCell>
-                <NumberInput
-                  onChange={(e) => setWage(Number(e.target.value))}
-                  icon={CurrencyDollarIcon}
-                  placeholder="Salário..."
-                />
+                <Select
+                  placeholder="Instrutor..."
+                  value={String(instructor?.name)}
+                  onValueChange={(value) => {
+                    const instructor = defaultInstructors.find(
+                      (instructor) => instructor.name === value
+                    );
+                    setInstructor(instructor);
+                  }}
+                >
+                  {defaultInstructors.map((instructor) => (
+                    <SelectItem key={instructor.id} value={instructor.name}>
+                      {instructor.name}
+                    </SelectItem>
+                  ))}
+                </Select>
               </TableFooterCell>
               <TableFooterCell>
                 <Button
                   variant="secondary"
                   icon={PlusIcon}
-                  onClick={handleAddInstructor}
+                  onClick={handleAddActivity}
                 >
-                  Cadastrar instrutor
+                  Cadastrar atividade
                 </Button>
               </TableFooterCell>
             </TableRow>
