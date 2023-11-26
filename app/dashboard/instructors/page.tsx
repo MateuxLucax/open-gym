@@ -1,10 +1,9 @@
 'use client';
 
-import { ptBR } from 'date-fns/locale';
 import {
   Button,
   Card,
-  DatePicker,
+  NumberInput,
   Select,
   SelectItem,
   Table,
@@ -17,44 +16,49 @@ import {
   TableRow,
   TextInput
 } from '@tremor/react';
-import { formatDate } from '../../utils';
+import { formatMoney } from '../../utils';
 import {
   ArrowSmallDownIcon,
   ArrowSmallUpIcon,
   ArrowsUpDownIcon,
+  CurrencyDollarIcon,
   PencilIcon,
   PlusIcon,
   TrashIcon
 } from '@heroicons/react/24/outline';
 import { useState } from 'react';
-import HeaderTitle from '../../components/headerTitle';
-import { Member, defaultMembers } from '../../models/member';
 import { Gender } from '../../models/gender';
+import { Instructor, defaultInstructors } from '../../models/instructor';
+import HeaderTitle from '../../components/headerTitle';
 
-export default function MembersPage() {
+export default function InstructorsPage() {
   const [name, setName] = useState('');
   const [gender, setGender] = useState<Gender>();
-  const [birthDate, setBirthDate] = useState(new Date(2000, 1, 1));
-  const [members, setMembers] = useState<Member[]>(defaultMembers);
+  const [qualification, setQualification] = useState('');
+  const [wage, setWage] = useState(0);
+  const [instructors, setInstructors] =
+    useState<Instructor[]>(defaultInstructors);
   const [sortKey, setSortKey] = useState<string>('');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc' | 'none'>('none');
 
-  function handleAddMember() {
+  function handleAddInstructor() {
     if (!name) return;
     if (!gender) return;
-    if (!birthDate) return;
+    if (!qualification) return;
 
-    const newMember: Member = {
-      id: members.length + 1,
+    const newInstructor: Instructor = {
+      id: instructors.length + 1,
       name,
       gender,
-      birthDate
+      qualification: qualification,
+      wage: wage
     };
 
-    setMembers((prevMembers) => [...prevMembers, newMember]);
+    setInstructors((prevInstructors) => [...prevInstructors, newInstructor]);
     setName('');
     setGender(undefined);
-    setBirthDate(new Date(2000, 1, 1));
+    setQualification('');
+    setWage(0);
   }
   function renderSortIcon(key: string) {
     if (sortKey === key) {
@@ -86,10 +90,10 @@ export default function MembersPage() {
     }
   }
 
-  const sortedMembers = [...members].sort((a, b) => {
+  const sortedInstructors = [...instructors].sort((a, b) => {
     if (sortKey && sortOrder !== 'none') {
-      const aValue = a[sortKey as keyof Member];
-      const bValue = b[sortKey as keyof Member];
+      const aValue = a[sortKey as keyof Instructor];
+      const bValue = b[sortKey as keyof Instructor];
 
       if (typeof aValue === 'number' && typeof bValue === 'number') {
         if (aValue < bValue) return sortOrder === 'asc' ? -1 : 1;
@@ -106,19 +110,21 @@ export default function MembersPage() {
     return 0;
   });
 
-  async function removeMember(id: number) {
+  async function removeInstructor(id: number) {
     const confirmed = window.confirm(
-      'Tem certeza que deseja remover este membro?'
+      'Tem certeza que deseja remover este instrutor?'
     );
     if (!confirmed) return;
-    const updatedMembers = members.filter((member) => member.id !== id);
-    setMembers(updatedMembers);
+    const updatedInstructors = instructors.filter(
+      (instructor) => instructor.id !== id
+    );
+    setInstructors(updatedInstructors);
   }
 
   return (
     <>
       <section className="flex mb-8">
-        <HeaderTitle>Membros</HeaderTitle>
+        <HeaderTitle>Instrutores</HeaderTitle>
       </section>
       <Card className="max-w">
         <Table>
@@ -135,10 +141,10 @@ export default function MembersPage() {
                   {renderSortIcon('name')}
                 </span>
               </TableHeaderCell>
-              <TableHeaderCell onClick={() => handleSort('birthDate')}>
+              <TableHeaderCell onClick={() => handleSort('qualification')}>
                 <span className="flex flex-row align-middle gap-4">
-                  Data de nascimento
-                  {renderSortIcon('birthDate')}
+                  Qualificação
+                  {renderSortIcon('qualification')}
                 </span>
               </TableHeaderCell>
               <TableHeaderCell onClick={() => handleSort('gender')}>
@@ -147,16 +153,23 @@ export default function MembersPage() {
                   {renderSortIcon('gender')}
                 </span>
               </TableHeaderCell>
+              <TableHeaderCell onClick={() => handleSort('wage')}>
+                <span className="flex flex-row align-middle gap-4">
+                  Salário
+                  {renderSortIcon('wage')}
+                </span>
+              </TableHeaderCell>
               <TableHeaderCell>Ações</TableHeaderCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {sortedMembers.map((member) => (
-              <TableRow key={member.id}>
-                <TableCell>{member.id}</TableCell>
-                <TableCell>{member.name}</TableCell>
-                <TableCell>{formatDate(member.birthDate)}</TableCell>
-                <TableCell>{member.gender}</TableCell>
+            {sortedInstructors.map((instructor) => (
+              <TableRow key={instructor.id}>
+                <TableCell>{instructor.id}</TableCell>
+                <TableCell>{instructor.name}</TableCell>
+                <TableCell>{instructor.qualification}</TableCell>
+                <TableCell>{instructor.gender}</TableCell>
+                <TableCell>{formatMoney(instructor.wage)}</TableCell>
                 <TableCell className="flex flex-row gap-4">
                   <Button
                     variant="light"
@@ -169,7 +182,7 @@ export default function MembersPage() {
                     color="red"
                     icon={TrashIcon}
                     tooltip="Remover"
-                    onClick={() => removeMember(member.id)}
+                    onClick={() => removeInstructor(instructor.id)}
                   />
                 </TableCell>
               </TableRow>
@@ -186,12 +199,10 @@ export default function MembersPage() {
                 />
               </TableFooterCell>
               <TableFooterCell>
-                <DatePicker
-                  onValueChange={(value) => setBirthDate(value as Date)}
-                  locale={ptBR}
-                  value={birthDate}
-                  enableYearNavigation
-                  placeholder="Nascido em..."
+                <TextInput
+                  value={qualification}
+                  onChange={(e) => setQualification(e.target.value)}
+                  placeholder="Qualificação..."
                 />
               </TableFooterCell>
               <TableFooterCell>
@@ -210,12 +221,19 @@ export default function MembersPage() {
                 </Select>
               </TableFooterCell>
               <TableFooterCell>
+                <NumberInput
+                  onChange={(e) => setWage(Number(e.target.value))}
+                  icon={CurrencyDollarIcon}
+                  placeholder="Salário..."
+                />
+              </TableFooterCell>
+              <TableFooterCell>
                 <Button
                   variant="secondary"
                   icon={PlusIcon}
-                  onClick={handleAddMember}
+                  onClick={handleAddInstructor}
                 >
-                  Cadastrar membro
+                  Cadastrar instrutor
                 </Button>
               </TableFooterCell>
             </TableRow>

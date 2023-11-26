@@ -1,17 +1,11 @@
+import { Gender } from './gender';
+
 export type Member = {
   id: number;
   name: string;
   birthDate: Date;
   gender: Gender;
 };
-
-export enum Gender {
-  masculino = 'Masculino',
-  feminino = 'Feminino',
-  outro = 'Outro'
-}
-
-export const genders = [Gender.masculino, Gender.feminino, Gender.outro];
 
 export const defaultMembers: Member[] = [
   {
