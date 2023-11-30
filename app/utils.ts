@@ -2,6 +2,14 @@ export function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(' ');
 }
 
+export function monthDiff(dateFrom: Date, dateTo: Date) {
+  return (
+    dateTo.getMonth() -
+    dateFrom.getMonth() +
+    12 * (dateTo.getFullYear() - dateFrom.getFullYear())
+  );
+}
+
 export function formatMoney(price: number) {
   return price.toLocaleString('pt-BR', {
     style: 'currency',

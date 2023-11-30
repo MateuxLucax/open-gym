@@ -1,11 +1,9 @@
 'use client';
 
-import { ptBR } from 'date-fns/locale';
 import {
   BadgeDelta,
   Button,
   Card,
-  DatePicker,
   Flex,
   Grid,
   Metric,
@@ -41,7 +39,6 @@ import { Member, defaultMembers } from '../../models/member';
 
 export default function SalesPage() {
   const [sales, setSales] = useState<Sale[]>(defaultSales);
-  const [date, setDate] = useState<Date | undefined>(new Date());
   const [member, setMember] = useState<Member | undefined>();
   const [product, setProduct] = useState<Product | undefined>();
   const [quantity, setQuantity] = useState<number>(0);
@@ -59,7 +56,7 @@ export default function SalesPage() {
     if (!sale) {
       const newSale: Sale = {
         id: sales.length + 1,
-        date: date || new Date(),
+        date: new Date(),
         salesProducts: [newSaleProduct],
         member: member || defaultMembers[0]
       };
@@ -104,7 +101,6 @@ export default function SalesPage() {
     setSale(undefined);
     setProduct(undefined);
     setQuantity(0);
-    setDate(undefined);
     setMember(undefined);
   }
 
@@ -171,16 +167,8 @@ export default function SalesPage() {
           <header className="flex flex-row px-4 items-center">
             <div>
               <Title className="font-normal flex items-center mr-1">
-                #{sales.length + 1} -
+                #{sales.length + 1}
               </Title>
-            </div>
-            <div>
-              <DatePicker
-                onValueChange={(value) => setDate(value as Date)}
-                locale={ptBR}
-                value={date}
-                placeholder="Vendido em..."
-              />
             </div>
             <div className="ml-auto flex gap-4">
               <Button
