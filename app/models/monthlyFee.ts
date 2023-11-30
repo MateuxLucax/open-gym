@@ -28,8 +28,6 @@ export const nextStatus = {
   [PaymentStatus.overdue]: PaymentStatus.paid
 };
 
-const firstEnrollment = defaultEnrollments[0];
-
 export function generateFees(enrollment: Enrollment): MonthlyFee[] {
   const fees = <MonthlyFee[]>[];
 
@@ -65,5 +63,6 @@ export function generateFees(enrollment: Enrollment): MonthlyFee[] {
 }
 
 export const defaultMonthlyFees: MonthlyFee[] = [
-  ...generateFees(firstEnrollment)
+  ...generateFees(defaultEnrollments[0]),
+  ...generateFees(defaultEnrollments[1])
 ];

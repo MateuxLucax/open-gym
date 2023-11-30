@@ -27,5 +27,21 @@ export const defaultEnrollments: Enrollment[] = [
     startDate: new Date(2023, 0, 1),
     endDate: new Date(2023, 11, 31),
     discount: 0.05
+  },
+  {
+    id: 2,
+    member: defaultMembers[1],
+    activities: [
+      {
+        id: 2,
+        enrollmentId: 2,
+        activity: defaultActivities[1],
+        start: '06:00',
+        end: '07:00'
+      }
+    ],
+    startDate: new Date(2023, 7, 1),
+    endDate: new Date(2024, 2, 31),
+    discount: 0.075
   }
 ];
