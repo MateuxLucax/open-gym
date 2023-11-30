@@ -14,8 +14,6 @@ import {
   DateRangePickerValue,
   Flex,
   Grid,
-  List,
-  ListItem,
   Metric,
   NumberInput,
   Select,
@@ -105,6 +103,9 @@ export default function EnrollmentsPage() {
   const paidMonthlyFees = thisMonthFees.filter(
     (monthlyFee) => monthlyFee.status === PaymentStatus.paid
   );
+  const pendingMonthlyFees = thisMonthFees.filter(
+    (monthlyFee) => monthlyFee.status === PaymentStatus.pending
+  );
 
   function updateMonthlyFee(monthlyFee?: MonthlyFee) {
     if (!monthlyFee) return;
@@ -115,6 +116,12 @@ export default function EnrollmentsPage() {
   }
 
   const thisMonthTotal = paidMonthlyFees.reduce(
+    (acc, monthlyFee) =>
+      acc +
+      (monthlyFee.price - monthlyFee.price * monthlyFee.enrollment.discount),
+    0
+  );
+  const thisMonthPending = pendingMonthlyFees.reduce(
     (acc, monthlyFee) =>
       acc +
       (monthlyFee.price - monthlyFee.price * monthlyFee.enrollment.discount),
@@ -142,15 +149,26 @@ export default function EnrollmentsPage() {
         <HeaderTitle>Matrículas</HeaderTitle>
         <DateRange />
       </section>
-      <Grid numItems={2} className="gap-6 mb-6">
+      <Grid numItems={3} className="gap-6 mb-6">
         <Card>
           <Flex alignItems="start">
             <div>
-              <Text>Total no período</Text>
+              <Text>Pago no período</Text>
               <Metric>{formatMoney(thisMonthTotal)}</Metric>
             </div>
             <BadgeDelta deltaType="moderateIncrease">
               {((thisMonthTotal - 100) / 100) * 100}%
+            </BadgeDelta>
+          </Flex>
+        </Card>
+        <Card>
+          <Flex alignItems="start">
+            <div>
+              <Text>Pendente no período</Text>
+              <Metric>{formatMoney(thisMonthPending)}</Metric>
+            </div>
+            <BadgeDelta deltaType="moderateIncrease">
+              {((thisMonthPending - 100) / 100) * 100}%
             </BadgeDelta>
           </Flex>
         </Card>
@@ -168,7 +186,7 @@ export default function EnrollmentsPage() {
         <AccordionHeader className="text-xl font-bold">
           Nova matrícula
         </AccordionHeader>
-        <AccordionBody className="flex flex-col gap-4">
+        <AccordionBody className="flex flex-col gap-4 p-6">
           <div className="flex justify-start items-center gap-4">
             <Title>Membro</Title>
             <Select
@@ -191,9 +209,7 @@ export default function EnrollmentsPage() {
                 </SelectItem>
               ))}
             </Select>
-          </div>
-          <div className="flex justify-start items-center gap-4">
-            <Title>Período da matrícula</Title>
+            <Title className="ml-auto">Período da matrícula</Title>
             <DateRangePicker
               value={date}
               onValueChange={setDate}
@@ -304,16 +320,17 @@ export default function EnrollmentsPage() {
               </TableBody>
             </Table>
           </div>
-          <div className="flex justify-start items-center gap-4">
-            <Title>Desconto</Title>
-            <NumberInput
-              className="w-48"
-              value={discount}
-              onValueChange={(value) => setDiscount(value / 100)}
-              placeholder="Desconto..."
-            />
-          </div>
+
           <div className="flex justify-end items-center gap-4">
+            <div className="flex justify-start items-center gap-4 mr-auto">
+              <Title>Desconto</Title>
+              <NumberInput
+                className="w-48"
+                value={discount}
+                onValueChange={(value) => setDiscount(value / 100)}
+                placeholder="Desconto..."
+              />
+            </div>
             <Title>Valor total</Title>
             <Metric>{formatMoney(discountedValueNewEnrollment)}</Metric>
             <Button
@@ -338,12 +355,6 @@ export default function EnrollmentsPage() {
           const color = statusColor[status || PaymentStatus.pending];
           const discountedPrice =
             monthlyFees[0].price - monthlyFees[0].price * enrollment.discount;
-          console.log(
-            'discountedPrice',
-            discountedPrice,
-            monthlyFees[0].price,
-            enrollment.discount
-          );
 
           return (
             <Card key={enrollment.id} className="max-h-96 overflow-scroll">

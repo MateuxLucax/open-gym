@@ -48,7 +48,7 @@ export function generateFees(enrollment: Enrollment): MonthlyFee[] {
 
     let status = PaymentStatus.pending;
     if (dueDate < new Date()) {
-      status = PaymentStatus.overdue;
+      status = PaymentStatus.paid;
     }
 
     fees.push({
